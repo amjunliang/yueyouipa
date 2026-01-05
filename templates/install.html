@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安装 {{ app_name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 26px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .info {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .label {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .value {
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .install-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: block;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .install-btn:active {
+            transform: translateY(0);
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            color: #666;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .warning {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            color: #856404;
+            font-size: 13px;
+            text-align: left;
+        }
+        
+        .qrcode {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-icon">🎮</div>
+        <h1>{{ app_name }}</h1>
+        
+        <div class="info">
+            <div class="info-item">
+                <span class="label">Bundle ID</span>
+                <span class="value">{{ bundle_id }}</span>
+            </div>
+            <div class="info-item">
+                <span class="label">版本</span>
+                <span class="value">{{ version }}</span>
+            </div>
+        </div>
+        
+        <a href="itms-services://?action=download-manifest&url={{ manifest_url }}" class="install-btn">
+            📲 点击安装
+        </a>
+        
+        <div class="instructions">
+            <h3>📝 安装说明</h3>
+            <ol>
+                <li>请在 <strong>iOS 设备上的 Safari 浏览器</strong>中打开此页面</li>
+                <li>点击上方"点击安装"按钮</li>
+                <li>在弹出的对话框中选择"安装"</li>
+                <li>返回主屏幕查看应用图标</li>
+                <li>首次打开应用前，需要在"设置 > 通用 > VPN与设备管理"中信任该企业证书</li>
+            </ol>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ 注意：</strong>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+                <li>此安装方式需要企业签名或测试证书</li>
+                <li>如果无法安装，请检查设备是否允许安装企业应用</li>
+                <li>请从可信来源下载IPA文件</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
