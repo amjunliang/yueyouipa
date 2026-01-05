@@ -47,6 +47,3 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Tests
-test_app.py

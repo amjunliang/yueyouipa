@@ -6,12 +6,17 @@ IPA安装服务 - iOS应用OTA安装
 
 import os
 import uuid
+import secrets
 from flask import Flask, render_template, request, send_file, url_for, jsonify
 from werkzeug.utils import secure_filename
 import plistlib
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+
+# 生成安全的默认密钥，但生产环境应使用环境变量
+if 'SECRET_KEY' not in os.environ:
+    print("WARNING: Using auto-generated SECRET_KEY. Set SECRET_KEY environment variable in production.")
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_urlsafe(32))
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max file size
 
@@ -19,6 +24,12 @@ app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max file size
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'ipa'}
+
+def is_https():
+    """检测请求是否通过HTTPS（支持代理）"""
+    proto = request.headers.get('X-Forwarded-Proto', '')
+    ssl = request.headers.get('X-Forwarded-Ssl', '')
+    return proto == 'https' or ssl == 'on' or request.is_secure
 
 def allowed_file(filename):
     """检查文件扩展名是否允许"""
@@ -92,10 +103,8 @@ def install_page(app_id):
         info = plistlib.load(f)
     
     # 生成manifest.plist的URL
-    manifest_url = url_for('manifest', app_id=app_id, _external=True, _scheme='https')
-    if request.headers.get('X-Forwarded-Proto') != 'https':
-        # 开发环境使用http
-        manifest_url = url_for('manifest', app_id=app_id, _external=True)
+    manifest_url = url_for('manifest', app_id=app_id, _external=True, 
+                          _scheme='https' if is_https() else 'http')
     
     return render_template('install.html', 
                          app_name=info['app_name'],
@@ -117,9 +126,8 @@ def manifest(app_id):
         info = plistlib.load(f)
     
     # 生成IPA文件的下载URL
-    ipa_url = url_for('download', app_id=app_id, _external=True, _scheme='https')
-    if request.headers.get('X-Forwarded-Proto') != 'https':
-        ipa_url = url_for('download', app_id=app_id, _external=True)
+    ipa_url = url_for('download', app_id=app_id, _external=True,
+                     _scheme='https' if is_https() else 'http')
     
     # 创建manifest.plist
     manifest_data = {
