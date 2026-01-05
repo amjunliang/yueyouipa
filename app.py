@@ -171,4 +171,6 @@ def download(app_id):
 
 if __name__ == '__main__':
     # 开发模式运行
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # 注意：生产环境应使用 Gunicorn 或 uWSGI，不要使用内置服务器
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
