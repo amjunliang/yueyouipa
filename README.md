@@ -1,1 +1,2 @@
 # yueyouipa
+1. 一个 html文件, 部署在github page 上, 点击链接的时候打开 itms-services://?action=download-manifest&url=http://itms-services//?action=download-manifest&url=https://raw.githubusercontent.com/amjunliang/yueyouipa/refs/heads/plist/test.plist

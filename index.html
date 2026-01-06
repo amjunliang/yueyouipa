@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应用下载中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .app-title-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .app-version {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .app-info {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .download-btn {
+            display: block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tips {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .tips h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .tips ol {
+            color: #666;
+            font-size: 14px;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .tips li {
+            margin: 8px 0;
+        }
+
+        .error {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            color: #d32f2f;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📱 iOS 应用下载中心</h1>
+        <p>选择应用并安装到您的设备</p>
+    </div>
+
+    <div class="container">
+        <div id="appList" class="app-grid">
+            <div class="loading">正在加载应用列表</div>
+        </div>
+
+        <div class="tips">
+            <h3>📱 安装说明</h3>
+            <ol>
+                <li>点击应用卡片中的"立即安装"按钮</li>
+                <li>在弹出的提示中选择"安装"</li>
+                <li>前往"设置 → 通用 → VPN与设备管理"</li>
+                <li>找到对应的企业证书并信任</li>
+                <li>返回桌面即可打开应用</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // 配置信息 - 请根据实际情况修改
+        const CONFIG = {
+            // GitHub 用户名和仓库名
+            owner: 'amjunliang',
+            repo: 'yueyouipa',
+            // plist 文件所在分支
+            branch: 'plist',
+            // plist 文件的基础 URL
+            baseUrl: 'https://raw.githubusercontent.com/amjunliang/yueyouipa/refs/heads/plist/'
+        };
+
+        // 应用图标映射（可自定义）
+        const APP_ICONS = {
+            'shadowrocket': '🚀',
+            'default': '📱'
+        };
+
+        // 检测是否为 iOS 设备
+        function isIOSDevice() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        // 解析 XML plist 文件
+        function parsePlist(xmlText) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+            
+            // 查找包含指定文本的 key 元素，并返回其下一个兄弟元素的值
+            const getValueForKey = (keyName) => {
+                const keys = xmlDoc.querySelectorAll('key');
+                for (let k of keys) {
+                    if (k.textContent.trim() === keyName) {
+                        const nextElement = k.nextElementSibling;
+                        return nextElement ? nextElement.textContent.trim() : null;
+                    }
+                }
+                return null;
+            };
+            
+            return {
+                title: getValueForKey('title') || '未知应用',
+                bundleId: getValueForKey('bundle-identifier') || '',
+                version: getValueForKey('bundle-version') || '',
+                ipaUrl: getValueForKey('url') || ''
+            };
+        }
+
+        // 从 GitHub 获取 plist 文件列表
+        async function fetchPlistFiles() {
+            try {
+                const apiUrl = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/trees/${CONFIG.branch}?recursive=1`;
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error('无法获取文件列表');
+                }
+                
+                const data = await response.json();
+                
+                // 筛选出 .plist 文件
+                const plistFiles = data.tree.filter(file => 
+                    file.path.endsWith('.plist')
+                );
+                
+                return plistFiles;
+            } catch (error) {
+                console.error('获取文件列表失败:', error);
+                throw error;
+            }
+        }
+
+        // 获取并解析单个 plist 文件
+        async function fetchAndParsePlist(filename) {
+            try {
+                const url = CONFIG.baseUrl + filename;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('无法获取 plist 文件');
+                }
+                
+                const xmlText = await response.text();
+                const appInfo = parsePlist(xmlText);
+                
+                return {
+                    ...appInfo,
+                    plistUrl: url,
+                    filename: filename
+                };
+            } catch (error) {
+                console.error(`解析 ${filename} 失败:`, error);
+                return null;
+            }
+        }
+
+        // 生成应用卡片 HTML
+        function createAppCard(app) {
+            const icon = APP_ICONS[app.title.toLowerCase()] || APP_ICONS.default;
+            const installUrl = `itms-services://?action=download-manifest&url=${encodeURIComponent(app.plistUrl)}`;
+            
+            return `
+                <div class="app-card">
+                    <div class="app-header">
+                        <div class="app-icon">${icon}</div>
+                        <div class="app-title-section">
+                            <div class="app-title" title="${app.title}">${app.title}</div>
+                            <div class="app-version">v${app.version}</div>
+                        </div>
+                    </div>
+                    <div class="app-info">
+                        <div class="info-row">
+                            <span class="info-label">Bundle ID</span>
+                            <span class="info-value" title="${app.bundleId}">${app.bundleId}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">文件名</span>
+                            <span class="info-value" title="${app.filename}">${app.filename}</span>
+                        </div>
+                    </div>
+                    <a href="${installUrl}" class="download-btn">立即安装</a>
+                </div>
+            `;
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            document.getElementById('appList').innerHTML = `
+                <div class="error">
+                    <h3>❌ 加载失败</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // 显示空状态
+        function showEmpty() {
+            document.getElementById('appList').innerHTML = `
+                <div class="empty">
+                    <div class="empty-icon">📦</div>
+                    <h3>暂无应用</h3>
+                    <p>目前还没有可用的应用</p>
+                </div>
+            `;
+        }
+
+        // 主函数：加载并显示所有应用
+        async function loadApps() {
+            try {
+                // 获取 plist 文件列表
+                const plistFiles = await fetchPlistFiles();
+                
+                if (plistFiles.length === 0) {
+                    showEmpty();
+                    return;
+                }
+                
+                // 并行获取并解析所有 plist 文件
+                const appPromises = plistFiles.map(file => fetchAndParsePlist(file.path));
+                const apps = await Promise.all(appPromises);
+                
+                // 过滤掉解析失败的应用
+                const validApps = apps.filter(app => app !== null);
+                
+                if (validApps.length === 0) {
+                    showEmpty();
+                    return;
+                }
+                
+                // 生成应用卡片
+                const appListHtml = validApps.map(app => createAppCard(app)).join('');
+                document.getElementById('appList').innerHTML = appListHtml;
+                
+            } catch (error) {
+                showError('无法加载应用列表，请稍后重试');
+                console.error(error);
+            }
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查设备类型
+            if (!isIOSDevice()) {
+                const tips = document.querySelector('.tips');
+                tips.innerHTML = '<h3>⚠️ 设备提示</h3><p style="color: #666; font-size: 14px;">此应用仅支持 iOS 设备安装，请使用 iPhone 或 iPad 访问此页面。</p>';
+            }
+            
+            // 加载应用列表
+            loadApps();
+        });
+    </script>
+</body>
+</html>
+
